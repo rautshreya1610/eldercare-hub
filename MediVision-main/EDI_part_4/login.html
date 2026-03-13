@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | EldercareHub</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #007bff, #00b8a9);
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+    .navbar {
+      background: #fff;
+    }
+    .navbar-brand {
+      font-weight: bold;
+      color: #007bff !important;
+    }
+    .card {
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+    .btn-primary {
+      background: #007bff;
+      border: none;
+      transition: 0.3s ease;
+    }
+    .btn-primary:hover {
+      background: #00b8a9;
+      transform: scale(1.05);
+    }
+    #togglePassword {
+      position: absolute;
+      right: 15px;
+      top: 38px;
+      cursor: pointer;
+    }
+    .role-select {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .role-btn {
+      flex: 1;
+      border-radius: 8px;
+      border: 1px solid #007bff;
+      background: #fff;
+      color: #007bff;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+    .role-btn.active, .role-btn:hover {
+      background: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+
+<body class="bg-light">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-light bg-white shadow-sm">
+    <div class="container d-flex justify-content-between">
+      <a href="index.html" class="navbar-brand fs-3">🌼 EldercareHub</a>
+      <button class="btn btn-outline-primary" id="homeBtn"><i class="bi bi-house-door"></i> Home</button>
+    </div>
+  </nav>
+
+  <!-- Login Form -->
+  <section class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4 shadow-lg border-0 animate__animated animate__fadeInUp" style="max-width: 420px; width: 100%;">
+      <h2 class="text-center text-primary mb-3">Welcome Back 👋</h2>
+      <p class="text-center text-muted mb-4">Login to continue to your dashboard</p>
+
+      <div class="mb-3">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="email" class="form-control" placeholder="Enter your email">
+      </div>
+
+      <div class="mb-3 position-relative">
+        <label class="form-label">Password</label>
+        <input type="password" id="password" class="form-control" placeholder="Enter your password">
+        <i class="bi bi-eye-slash" id="togglePassword"></i>
+      </div>
+
+      <div class="role-select mb-3">
+        <button class="role-btn active" data-role="elder">👵 Elder</button>
+        <button class="role-btn" data-role="helper">🤝 Helper</button>
+        <button class="role-btn" data-role="admin">👨‍💼 Admin</button>
+      </div>
+
+      <button id="loginBtn" class="btn btn-primary w-100 py-2 mt-2">Login</button>
+
+      <p class="text-center mt-3">
+        <a href="#" id="forgotPassword" class="text-decoration-none text-primary">Forgot Password?</a>
+      </p>
+
+      <p class="text-center mt-2 mb-0">
+        Don’t have an account? 
+        <a href="signup.html" class="text-decoration-none text-primary">Sign Up</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- JS Logic -->
+  <script>
+    // 👁️ Toggle Password Visibility
+    const passwordField = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
+
+    togglePassword.addEventListener("click", () => {
+      const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
+      passwordField.setAttribute("type", type);
+      togglePassword.classList.toggle("bi-eye");
+    });
+
+    // 🏠 Go Home Button
+    document.getElementById("homeBtn").addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+
+    // 🔘 Role Selection
+    let selectedRole = "elder";
+    document.querySelectorAll(".role-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".role-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        selectedRole = btn.dataset.role;
+      });
+    });
+
+    // 🧩 Forgot Password
+    document.getElementById("forgotPassword").addEventListener("click", () => {
+      Swal.fire({
+        title: "Forgot Password?",
+        input: "email",
+        inputLabel: "Enter your registered email",
+        inputPlaceholder: "example@mail.com",
+        confirmButtonText: "Send Reset Link",
+        showCancelButton: true,
+      }).then(result => {
+        if (result.isConfirmed && result.value) {
+          Swal.fire("📩 Reset Email Sent", "Please check your inbox for password reset instructions.", "success");
+        }
+      });
+    });
+
+    // ✅ Login Validation + Redirect
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!email || !password) {
+        Swal.fire("⚠️ Missing Info", "Please enter both email and password!", "warning");
+        return;
+      }
+      if (!emailRegex.test(email)) {
+        Swal.fire("📧 Invalid Email", "Please enter a valid email address.", "error");
+        return;
+      }
+      if (password.length < 6) {
+        Swal.fire("🔒 Weak Password", "Password must be at least 6 characters.", "error");
+        return;
+      }
+
+      // Simulated successful login
+      Swal.fire({
+        icon: "success",
+        title: "✅ Login Successful!",
+        text: "Welcome back! Redirecting to your dashboard...",
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      setTimeout(() => {
+        if (selectedRole === "elder") {
+          window.location.href = "user_dashboard.html";
+        } else if (selectedRole === "helper") {
+          window.location.href = "helper_dashboard.html";
+        } else {
+          window.location.href = "admin_dashboard.html";
+        }
+      }, 2000);
+    });
+  </script>
+</body>
+</html>

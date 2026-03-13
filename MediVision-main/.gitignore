@@ -1,0 +1,28 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# VS Code settings
+.vscode/
+
+# Upload folders
+uploads/
+
+# Jupyter notebooks
+*.ipynb
+
+# Logs
+*.log
+
+# Images
+Screenshot*.png
+
+# ML models
+*.h5
+*.keras
+
+# Temporary files
+*.txt

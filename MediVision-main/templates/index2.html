@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EldercareHub</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: linear-gradient(90deg, #007bff, #00c3ff);
+    }
+    .navbar-brand {
+      color: #fff !important;
+    }
+    .nav-link {
+      color: #fff !important;
+      transition: all 0.3s;
+    }
+    .nav-link:hover {
+      text-shadow: 0 0 10px #fff;
+    }
+
+    /* Hero Section */
+    .hero {
+      height: 100vh;
+      background: linear-gradient(135deg, #007bff, #00b8a9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      padding: 0 15px;
+      position: relative;
+    }
+
+    .hero-img {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+      border: 5px solid rgba(255, 255, 255, 0.5);
+      margin-bottom: 25px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .glow-btn {
+      transition: all 0.4s ease;
+    }
+    .glow-btn:hover {
+      box-shadow: 0 0 15px #fff;
+      transform: scale(1.05);
+    }
+
+    /* Features */
+    .features {
+      background: #f8f9fa;
+      padding-top: 80px;
+      padding-bottom: 80px;
+    }
+
+    .feature-card {
+      border-radius: 15px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
+    }
+
+    /* Contact Section */
+    .contact {
+      background: linear-gradient(135deg, #007bff, #00b8a9);
+      color: white;
+      padding: 60px 15px;
+    }
+
+    #contactBtn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 10px #fff;
+    }
+
+    /* Footer */
+    footer {
+      background: #111;
+      color: #ccc;
+      padding: 15px 0;
+    }
+
+    /* Smooth Scroll */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Animation delays */
+    .animate__delay-1s { animation-delay: 1s; }
+    .animate__delay-2s { animation-delay: 2s; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-img {
+        width: 160px;
+        height: 160px;
+      }
+      .hero h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark shadow-sm fixed-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold fs-3" href="#">🌼 EldercareHub</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" 
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item mx-2"><a href="#" class="nav-link active">Home</a></li>
+          <li class="nav-item mx-2"><a href="#" class="nav-link">About</a></li>
+          <li class="nav-item mx-2"><a href="login.html" class="nav-link">Login</a></li>
+          <li class="nav-item mx-2"><a href="signup.html" class="nav-link">Sign Up</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero text-center">
+    <img src="images/elder1.jpeg" 
+         alt="Eldercare" class="hero-img animate__animated animate__fadeInDown">
+
+    <h1 class="animate__animated animate__fadeInUp">Caring Made Simple ❤️</h1>
+    <p class="animate__animated animate__fadeInUp animate__delay-1s">
+      Find trusted caregivers for daily needs — groceries, cleaning, personal care, and more.
+    </p>
+    <div class="mt-4 animate__animated animate__fadeInUp animate__delay-2s">
+      <button class="btn btn-lg btn-light mx-2 glow-btn" id="findHelpBtn">Find Help</button>
+      <button class="btn btn-lg btn-outline-light mx-2 glow-btn" id="beHelperBtn">Become a Helper</button>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features text-center">
+    <div class="container">
+      <h2 class="fw-bold mb-5 text-primary">Why Choose Us?</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card feature-card h-100 shadow animate__animated animate__fadeInLeft">
+            <img src="https://www.svgrepo.com/show/478341/elderly-care.svg" width="80" class="mx-auto mt-4" alt="">
+            <div class="card-body">
+              <h5>Verified Caregivers</h5>
+              <p>Every helper is background-checked for your safety and peace of mind.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card feature-card h-100 shadow animate__animated animate__fadeInUp">
+            <img src="https://www.svgrepo.com/show/478434/community-support.svg" width="80" class="mx-auto mt-4" alt="">
+            <div class="card-body">
+              <h5>Friendly Companions</h5>
+              <p>Our community helps elders live happily and independently at home.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card feature-card h-100 shadow animate__animated animate__fadeInRight">
+            <img src="https://www.svgrepo.com/show/477707/secure-payment.svg" width="80" class="mx-auto mt-4" alt="">
+            <div class="card-body">
+              <h5>Quick & Easy Booking</h5>
+              <p>Book services instantly and pay securely — anytime, anywhere.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact text-center">
+    <div class="container">
+      <h2 class="fw-bold mb-3">Need Assistance?</h2>
+      <p>Contact our support team 24/7 for any help or emergency.</p>
+      <button class="btn btn-lg btn-warning mt-3 px-4" id="contactBtn">Contact Us</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center">
+    <p class="mb-0">&copy; 2025 EldercareHub — Made with 💙 by SEDA Students</p>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Custom JS -->
+  <script>
+    document.getElementById("findHelpBtn").addEventListener("click", () => {
+      window.location.href = "user_dashboard.html";
+    });
+
+    document.getElementById("beHelperBtn").addEventListener("click", () => {
+      window.location.href = "helper_dashboard.html";
+    });
+
+    document.getElementById("contactBtn").addEventListener("click", () => {
+      const name = prompt("Enter your name:");
+      const message = prompt("Enter your message or query:");
+      if (!name || !message) {
+        alert("⚠️ Please fill in all details before submitting.");
+      } else {
+        alert(`✅ Thank you ${name}! Our team will contact you soon.`);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard | EldercareHub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f9fa;
+    }
+    .navbar {
+      background: linear-gradient(90deg, #007bff, #00b8a9);
+    }
+    .navbar-brand {
+      color: white !important;
+      font-weight: 600;
+    }
+    .nav-link.active {
+      background-color: #00b8a9;
+      color: white !important;
+      border-radius: 10px;
+    }
+    .card {
+      border-radius: 15px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    .table th {
+      background: #007bff;
+      color: white;
+    }
+    .badge {
+      font-size: 0.8rem;
+    }
+    .summary-card {
+      text-align: center;
+      color: white;
+      border-radius: 12px;
+      padding: 15px;
+      font-weight: 600;
+    }
+    .summary-card h2 {
+      font-size: 1.8rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg shadow-sm">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand fs-4">🌼 EldercareHub Admin</a>
+      <div class="ms-auto">
+        <button id="logoutBtn" class="btn btn-light btn-sm"><i class="bi bi-box-arrow-right"></i> Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Summary Cards -->
+  <div class="container mt-4">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="summary-card bg-primary shadow">
+          <h2 id="totalHelpers">0</h2>
+          <p>Helpers Registered</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="summary-card bg-success shadow">
+          <h2 id="totalUsers">0</h2>
+          <p>Active Users</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="summary-card bg-warning shadow">
+          <h2 id="totalBookings">0</h2>
+          <p>Bookings</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Tabs -->
+  <div class="container mt-4">
+    <ul class="nav nav-tabs mb-3" id="adminTabs">
+      <li class="nav-item"><a class="nav-link active" data-section="helpers">Helpers</a></li>
+      <li class="nav-item"><a class="nav-link" data-section="users">Users</a></li>
+      <li class="nav-item"><a class="nav-link" data-section="bookings">Bookings</a></li>
+    </ul>
+
+    <!-- Helpers Section -->
+    <div id="helpersSection" class="card p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="text-primary"><i class="bi bi-person-badge"></i> Helpers</h5>
+        <button class="btn btn-sm btn-success" id="addHelperBtn"><i class="bi bi-plus-circle"></i> Add Helper</button>
+      </div>
+
+      <input class="form-control mb-3" id="helperSearch" placeholder="Search helper by name or service">
+
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>Service</th>
+            <th>Rate (₹)</th>
+            <th>Address</th>
+            <th>Rating</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="helperTable"></tbody>
+      </table>
+    </div>
+
+    <!-- Users Section -->
+    <div id="usersSection" class="card p-3 d-none">
+      <h5 class="text-primary mb-3"><i class="bi bi-person"></i> Registered Users</h5>
+      <input class="form-control mb-3" id="userSearch" placeholder="Search user by name or city">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>City</th></tr>
+        </thead>
+        <tbody id="userTable"></tbody>
+      </table>
+    </div>
+
+    <!-- Bookings Section -->
+    <div id="bookingsSection" class="card p-3 d-none">
+      <h5 class="text-primary mb-3"><i class="bi bi-calendar-check"></i> Bookings</h5>
+      <input class="form-control mb-3" id="bookingSearch" placeholder="Search by user/helper/service">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr><th>User</th><th>Helper</th><th>Service</th><th>Price (₹)</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody id="bookingTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script>
+    // Default Data
+    let helpers = [
+      { name: "Rohan Mehta", service: "Cleaning", address: "Pune", price: 250, rating: 4.7, img: "https://cdn-icons-png.flaticon.com/512/2922/2922561.png" },
+      { name: "Anita Sharma", service: "Grocery", address: "Mumbai", price: 200, rating: 4.9, img: "https://cdn-icons-png.flaticon.com/512/706/706830.png" },
+    ];
+    let users = [
+      { name: "Neha Patil", email: "neha@example.com", city: "Nashik" },
+      { name: "Ajay Kumar", email: "ajay@example.com", city: "Pune" }
+    ];
+    let bookings = [
+      { user: "Neha Patil", helper: "Rohan Mehta", service: "Cleaning", price: 250, status: "Pending" },
+    ];
+
+    // Pull helper from localStorage (from helper dashboard)
+    const savedHelper = localStorage.getItem("helperProfile");
+    if (savedHelper) {
+      const h = JSON.parse(savedHelper);
+      helpers.unshift({
+        name: h.name, service: h.service, address: h.address,
+        price: h.rate, rating: h.rating, img: h.imageSrc
+      });
+    }
+
+    const helperTable = document.getElementById("helperTable");
+    const userTable = document.getElementById("userTable");
+    const bookingTable = document.getElementById("bookingTable");
+
+    // 🧩 Render Helpers
+    function renderHelpers() {
+      helperTable.innerHTML = "";
+      helpers.forEach((h, i) => {
+        helperTable.innerHTML += `
+          <tr>
+            <td><img src="${h.img}" width="50" class="rounded-circle"></td>
+            <td>${h.name}</td>
+            <td>${h.service}</td>
+            <td>₹${h.price}</td>
+            <td>${h.address}</td>
+            <td>⭐ ${h.rating}</td>
+            <td>
+              <button class="btn btn-warning btn-sm me-1" onclick="editHelper(${i})"><i class="bi bi-pencil"></i></button>
+              <button class="btn btn-danger btn-sm" onclick="deleteHelper(${i})"><i class="bi bi-trash"></i></button>
+            </td>
+          </tr>`;
+      });
+      updateSummary();
+    }
+
+    // 🧩 Render Users
+    function renderUsers() {
+      userTable.innerHTML = "";
+      users.forEach(u => {
+        userTable.innerHTML += `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.city}</td></tr>`;
+      });
+      updateSummary();
+    }
+
+    // 🧩 Render Bookings
+    function renderBookings() {
+      bookingTable.innerHTML = "";
+      bookings.forEach((b, i) => {
+        bookingTable.innerHTML += `
+          <tr>
+            <td>${b.user}</td>
+            <td>${b.helper}</td>
+            <td>${b.service}</td>
+            <td>${b.price}</td>
+            <td><span class="badge bg-${b.status === 'Completed' ? 'success' : b.status === 'In Progress' ? 'info' : 'warning'}">${b.status}</span></td>
+            <td>
+              <button class="btn btn-sm btn-success" onclick="nextStatus(${i})">Next</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteBooking(${i})"><i class="bi bi-trash"></i></button>
+            </td>
+          </tr>`;
+      });
+      updateSummary();
+    }
+
+    // 🧠 Update Status
+    function nextStatus(index) {
+      const statuses = ["Pending", "In Progress", "Completed"];
+      let current = bookings[index].status;
+      let next = statuses[(statuses.indexOf(current) + 1) % statuses.length];
+      bookings[index].status = next;
+      renderBookings();
+    }
+
+    // 🧩 Delete Functions
+    function deleteHelper(i) {
+      Swal.fire({ title: "Delete Helper?", icon: "warning", showCancelButton: true })
+      .then(res => { if (res.isConfirmed) { helpers.splice(i, 1); renderHelpers(); Swal.fire("Deleted!", "", "success"); }});
+    }
+    function deleteBooking(i) {
+      Swal.fire({ title: "Cancel Booking?", icon: "warning", showCancelButton: true })
+      .then(res => { if (res.isConfirmed) { bookings.splice(i, 1); renderBookings(); Swal.fire("Deleted!", "", "success"); }});
+    }
+
+    // 🧩 Add Helper
+    document.getElementById("addHelperBtn").addEventListener("click", () => {
+      Swal.fire({
+        title: "Add New Helper",
+        html: `
+          <input id="hName" class="swal2-input" placeholder="Full Name">
+          <input id="hService" class="swal2-input" placeholder="Service Type">
+          <input id="hRate" type="number" class="swal2-input" placeholder="Rate (₹)">
+          <input id="hAddress" class="swal2-input" placeholder="Address">
+        `,
+        preConfirm: () => {
+          const name = document.getElementById("hName").value.trim();
+          const service = document.getElementById("hService").value.trim();
+          const rate = document.getElementById("hRate").value.trim();
+          const address = document.getElementById("hAddress").value.trim();
+          if (!name || !service || !rate || !address) {
+            Swal.showValidationMessage("⚠️ Please fill all fields");
+            return false;
+          }
+          return { name, service, rate, address };
+        }
+      }).then(res => {
+        if (res.isConfirmed) {
+          const { name, service, rate, address } = res.value;
+          helpers.push({
+            name, service, price: rate, address,
+            rating: (4.3 + Math.random() * 0.5).toFixed(1),
+            img: "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+          });
+          renderHelpers();
+          Swal.fire("✅ Helper Added!", "", "success");
+        }
+      });
+    });
+
+    // ✏️ Edit Helper
+    function editHelper(i) {
+      const h = helpers[i];
+      Swal.fire({
+        title: "Edit Helper",
+        html: `
+          <input id="editName" class="swal2-input" value="${h.name}">
+          <input id="editService" class="swal2-input" value="${h.service}">
+          <input id="editRate" type="number" class="swal2-input" value="${h.price}">
+          <input id="editAddress" class="swal2-input" value="${h.address}">
+        `,
+        preConfirm: () => {
+          const name = document.getElementById("editName").value.trim();
+          const service = document.getElementById("editService").value.trim();
+          const rate = document.getElementById("editRate").value.trim();
+          const address = document.getElementById("editAddress").value.trim();
+          if (!name || !service || !rate || !address) {
+            Swal.showValidationMessage("⚠️ Please fill all fields properly");
+            return false;
+          }
+          return { name, service, rate, address };
+        }
+      }).then(res => {
+        if (res.isConfirmed) {
+          Object.assign(h, res.value);
+          renderHelpers();
+          Swal.fire("✅ Updated!", "Helper details updated successfully.", "success");
+        }
+      });
+    }
+
+    // 🔍 Search Filters
+    document.getElementById("helperSearch").addEventListener("keyup", e => {
+      const q = e.target.value.toLowerCase();
+      renderHelpers(helpers.filter(h => h.name.toLowerCase().includes(q) || h.service.toLowerCase().includes(q)));
+    });
+    document.getElementById("userSearch").addEventListener("keyup", e => {
+      const q = e.target.value.toLowerCase();
+      userTable.innerHTML = "";
+      users.filter(u => u.name.toLowerCase().includes(q) || u.city.toLowerCase().includes(q))
+        .forEach(u => userTable.innerHTML += `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.city}</td></tr>`);
+    });
+    document.getElementById("bookingSearch").addEventListener("keyup", e => {
+      const q = e.target.value.toLowerCase();
+      bookingTable.innerHTML = "";
+      bookings.filter(b => b.user.toLowerCase().includes(q) || b.helper.toLowerCase().includes(q))
+        .forEach((b, i) => bookingTable.innerHTML += `<tr><td>${b.user}</td><td>${b.helper}</td><td>${b.service}</td><td>${b.price}</td><td>${b.status}</td></tr>`);
+    });
+
+    // 🔁 Tabs
+    const tabs = document.querySelectorAll("#adminTabs .nav-link");
+    const sections = {
+      helpers: document.getElementById("helpersSection"),
+      users: document.getElementById("usersSection"),
+      bookings: document.getElementById("bookingsSection")
+    };
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        tabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        const sec = tab.getAttribute("data-section");
+        for (let s in sections) sections[s].classList.add("d-none");
+        sections[sec].classList.remove("d-none");
+      });
+    });
+
+    // 🚪 Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      Swal.fire({ title: "Logout?", icon: "warning", showCancelButton: true, confirmButtonText: "Logout" })
+        .then(r => { if (r.isConfirmed) { Swal.fire("👋 Logged Out!", "", "success"); setTimeout(()=>location.href="login.html",2000); }});
+    });
+
+    // 📊 Update Summary
+    function updateSummary() {
+      document.getElementById("totalHelpers").textContent = helpers.length;
+      document.getElementById("totalUsers").textContent = users.length;
+      document.getElementById("totalBookings").textContent = bookings.length;
+    }
+
+    renderHelpers(); renderUsers(); renderBookings();
+  </script>
+</body>
+</html>

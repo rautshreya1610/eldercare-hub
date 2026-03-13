@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Reviews | EldercareHub</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    body {
+      background: #f8f9fa;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .navbar {
+      background: #fff;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+      color: #007bff !important;
+      font-weight: 600;
+    }
+
+    .review-card {
+      background: #fff;
+      border-radius: 15px;
+      padding: 20px;
+      transition: 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .review-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 18px rgba(0, 123, 255, 0.15);
+    }
+
+    .rating-stars {
+      color: #ffc107;
+      font-size: 1.1rem;
+    }
+
+    .btn-sm {
+      font-size: 0.8rem;
+      padding: 5px 8px;
+    }
+
+    .no-reviews {
+      text-align: center;
+      color: #777;
+      font-size: 1.1rem;
+      padding-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-light">
+    <div class="container">
+      <a href="user_dashboard.html" class="navbar-brand fs-4">🌼 EldercareHub</a>
+      <div>
+        <a href="my_bookings.html" class="btn btn-outline-primary btn-sm me-2"><i class="bi bi-calendar-check"></i> My Bookings</a>
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm"><i class="bi bi-box-arrow-right"></i> Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <h3 class="mb-4 text-primary">⭐ My Reviews</h3>
+    <div id="reviewsList" class="row g-3"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const reviewsList = document.getElementById("reviewsList");
+
+    // Load reviews from localStorage
+    let reviews = JSON.parse(localStorage.getItem("reviews")) || [];
+
+    // Function to render stars
+    const getStars = (rating) => "⭐".repeat(rating) + "☆".repeat(5 - rating);
+
+    // Render reviews
+    function renderReviews() {
+      reviewsList.innerHTML = "";
+      if (reviews.length === 0) {
+        reviewsList.innerHTML = `<p class="no-reviews">No reviews found 💤</p>`;
+        return;
+      }
+
+      reviews.forEach((r, index) => {
+        reviewsList.innerHTML += `
+          <div class="col-md-6">
+            <div class="review-card">
+              <div class="d-flex align-items-center justify-content-between">
+                <h6 class="mb-1 text-primary">${r.helperName}</h6>
+                <div class="rating-stars">${getStars(r.rating)}</div>
+              </div>
+              <p class="text-muted small mb-1">${r.date}</p>
+              <p class="mb-2">${r.comment}</p>
+              <div class="text-end">
+                <button class="btn btn-sm btn-warning" onclick="editReview(${index})"><i class="bi bi-pencil"></i> Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteReview(${index})"><i class="bi bi-trash"></i> Delete</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    renderReviews();
+
+    // 🧩 Edit Review
+    window.editReview = (index) => {
+      const review = reviews[index];
+      Swal.fire({
+        title: "Edit Review",
+        html: `
+          <input id="editRating" type="number" class="swal2-input" placeholder="Rating (1–5)" value="${review.rating}" min="1" max="5">
+          <textarea id="editComment" class="swal2-textarea" placeholder="Edit your comment">${review.comment}</textarea>
+        `,
+        preConfirm: () => {
+          const rating = parseInt(document.getElementById("editRating").value);
+          const comment = document.getElementById("editComment").value.trim();
+          if (!rating || rating < 1 || rating > 5) {
+            Swal.showValidationMessage("⚠️ Please enter a rating between 1–5.");
+            return false;
+          }
+          if (!comment) {
+            Swal.showValidationMessage("✍️ Comment cannot be empty.");
+            return false;
+          }
+          return { rating, comment };
+        }
+      }).then(result => {
+        if (result.isConfirmed) {
+          reviews[index].rating = result.value.rating;
+          reviews[index].comment = result.value.comment;
+          reviews[index].date = new Date().toLocaleString();
+          localStorage.setItem("reviews", JSON.stringify(reviews));
+          Swal.fire("✅ Updated!", "Your review has been updated.", "success");
+          renderReviews();
+        }
+      });
+    };
+
+    // 🗑️ Delete Review
+    window.deleteReview = (index) => {
+      Swal.fire({
+        title: "Delete this review?",
+        text: "This action cannot be undone.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it"
+      }).then(res => {
+        if (res.isConfirmed) {
+          reviews.splice(index, 1);
+          localStorage.setItem("reviews", JSON.stringify(reviews));
+          renderReviews();
+          Swal.fire("🗑️ Deleted!", "Your review has been removed.", "success");
+        }
+      });
+    };
+
+    // 🚪 Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      Swal.fire({
+        title: "Logout?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Logout"
+      }).then(res => {
+        if (res.isConfirmed) {
+          Swal.fire("👋 Logged Out!", "", "success");
+          setTimeout(() => (window.location.href = "login.html"), 1500);
+        }
+      });
+    });
+  });
+  </script>
+</body>
+</html>
