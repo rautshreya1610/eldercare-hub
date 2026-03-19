@@ -1,5 +1,5 @@
 🧓 ElderCare Hub – Smart Elder Assistance Platform
-📌 Overview
+📌 Overview of project
 
 ElderCare Hub is a web-based assistance platform designed to support elderly individuals in managing their daily activities independently. The system provides a simple and accessible interface that enables senior citizens to book household helpers, receive basic medical guidance through an AI chatbot, and set reminders for important tasks.
 
